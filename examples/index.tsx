@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import Main from './Main';
+import {RecoilRoot} from 'recoil'
 import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <RecoilRoot >
+      <Main />
+    </RecoilRoot>
   </React.StrictMode>,
   document.getElementById('root'),
 );
