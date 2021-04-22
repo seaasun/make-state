@@ -1,10 +1,9 @@
 import React from 'react'
 import {makeState} from '../src'
 
+const [useCount] = makeState(undefined)
 
-const [useCount] = makeState<number>(5)
-
-function Simple () {
+function Demo () {
     const [data, setData] = useCount()
     return <div>
       {data}
@@ -14,4 +13,4 @@ function Simple () {
     </div>
 }
 
-export default Simple
+export default Demo

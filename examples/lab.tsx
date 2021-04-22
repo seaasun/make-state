@@ -1,6 +1,6 @@
 import React from 'react'
 import {atom, selector, useRecoilState, useRecoilValue} from 'recoil'
-import { makeState } from 'src'
+import { makeState } from '../src'
 
 
 // const a2 = selector({

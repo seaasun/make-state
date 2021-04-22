@@ -1,9 +1,9 @@
-import { GetRecoilValue, RecoilState,
+import { GetRecoilValue, RecoilState, SetterOrUpdater,
     selector, atom, useRecoilCallback, useRecoilValue } from 'recoil'
 import {getUid} from './utils'
 import {produce} from 'immer'
 
-type AtomSet = () => void
+type AtomSet = (get?: any, set?: any, value?: any) => void
 
 const makeAtomState = <T>(
     atomGet: T,
@@ -12,30 +12,14 @@ const makeAtomState = <T>(
     return atom<T>({
         key,
         default: atomGet
-        // default: typeof atomGet !== 'function'
-        //     ? atomGet
-        //     : selector({
-        //         key: 'make-state-default-' + key,
-        //         get: ({get}) => {
-        //             // 后续增强功能
-        //             // let dripGet = get
-        //             // dripGet.get = get
-        //             // return atomGet(dripGet)
-
-        //             return atomGet(get)
-        //         }
-        //     })
     })
 }
 
 const makeSelectState =  <T>(
     atomGet: T,
-    atomSet: any,
+    atomSet: AtomSet | undefined,
     key: string
-): any => {
-    const a = {
-        a: undefined
-    }
+): RecoilState<T> => {
     return selector({
         key,
         get: ({get}) => {
@@ -46,37 +30,40 @@ const makeSelectState =  <T>(
             }
         },
         set: typeof atomSet !== 'function' 
-            ? (<AtomSet>(<any>undefined))
+            ? (<AtomSet><unknown>undefined)
             : ({get, set}, newValue) => {
                 atomSet(get, set, newValue)
             }
     })
 }
 
-const makeUseState = <T>(myState: RecoilState<T>) => () => {
-    const set = useRecoilCallback(({set}) => newValue => {
-        if (typeof newValue === 'function') {
-            set<T>(myState, state => produce(state, draft => newValue(draft)) as unknown as T)
-        } else {
-            set<T>(myState, newValue as T)
-        }
-      })
-      return [
-        useRecoilValue(myState),
-        set
-      ]
+function makeUseState <Value>(myState: RecoilState<Value>): () => [Value, SetterOrUpdater<Value>] {
+    function useState(): 
+        [Value, SetterOrUpdater<Value>] {
+        const set = useRecoilCallback(({set}) => newValue => {
+            if (typeof newValue === 'function') { 
+                set<Value>(myState, state => produce(state, draft => newValue(draft)) as unknown as Value)
+            } else {
+                set<Value>(myState, newValue as Value)
+            }
+          })
+          return [
+            useRecoilValue(myState),
+            set
+          ]
+    }
+    return useState
 }
 
 
-
-function makeState<T> (
-    atomGet: T, 
+function makeState<Value> (
+    atomGet: any, 
     param2?: AtomSet | string, 
-    param3?: string ):
-    [
-        () => any, 
-        RecoilState<T>
-    ] {
+    param3?: string ): [
+        () => [Value, SetterOrUpdater<Value>],
+        RecoilState<Value>
+        ]
+    {
 
     let atomSet: AtomSet | undefined
     let myKey: string = getUid()
@@ -91,17 +78,18 @@ function makeState<T> (
         }
     }
 
-    let myState: RecoilState<T>
-    if (typeof atomGet === 'function') {
-        myState = makeAtomState<T>(atomGet, myKey)
+    let myState: RecoilState<Value>
+    if (typeof atomGet !== 'function') {
+        myState = makeAtomState<Value>(atomGet, myKey)
     } else {
-        myState = makeSelectState<T>(atomGet, atomSet, myKey)
+        myState = makeSelectState<Value>(atomGet, atomSet, myKey)
     }
 
     return [
-        makeUseState<T>(myState),
+        makeUseState<Value>(myState),
         myState
     ]
 }
+
 
 export default makeState
