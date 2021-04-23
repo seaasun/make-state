@@ -1,14 +1,16 @@
 import React from 'react'
 import {makeState} from '../src'
 
-const [useCount] = makeState(5)
+const [useCount, count, {key}] = makeState(5, 'count')
+
+console.log(333, key)
 
 function Demo () {
     const [data, setData] = useCount()
     return <div>
       {data}
-      <button onClick = {e => {
-          setData((data: number) => data + 1)
+      <button onClick = {() => {
+          setData((data) => data + 1)
       }}>add</button>
     </div>
 }

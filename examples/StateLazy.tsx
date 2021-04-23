@@ -1,16 +1,24 @@
 import React from 'react'
 import {makeState} from '../src'
 
-const [useCount] = makeState<Number | undefined>(undefined)
+const [,init] = makeState(() => {
+  console.log(9)
+  return 5
+})
+
+const [useCount, count] = makeState<any>(init)
 
 function Demo () {
     const [data, setData] = useCount()
+    console.log(data)
     return <div>
-      {data}
+      11{data}
       <button onClick = {e => {
-          setData(1)
+          setData(3)
       }}>add</button>
-    </div>
+
+  </div>
+  // return <div>33</div>
 }
 
 export default Demo

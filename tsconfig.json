@@ -17,7 +17,7 @@
     "noEmit": true,
     /* Additional Options */
     "strict": true,
-    // "strictNullChecks": true,
+    "strictNullChecks": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,

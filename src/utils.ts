@@ -1,6 +1,5 @@
-let uId: number = 0
+import { v4 as uuidv4 } from 'uuid'
 
 export function getUid(): string {
-    uId = uId + 1
-    return uId.toString()
+    return uuidv4()
 }

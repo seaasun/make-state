@@ -1,10 +1,10 @@
-import { GetRecoilValue, RecoilState, SetterOrUpdater,SetRecoilState,
-    selector, atom, useRecoilCallback, useRecoilValue, } from 'recoil'
+import { GetRecoilValue, RecoilState, SetterOrUpdater,SetRecoilState, SerializableParam,ReadWriteSelectorFamilyOptions,
+    selector, atom, useRecoilCallback, useRecoilValue, atomFamily, selectorFamily } from 'recoil'
 import {getUid} from './utils'
 import {produce} from 'immer'
 
-type AtomSet<Value> = undefined | ((get?: GetRecoilValue, set?: any, value?: Value) => void )
-type AtomGet<Value> = ((get: GetRecoilValue) => Value)
+type AtomSet<Value> = undefined | ((get?: GetRecoilValue, set?: any, value?: Value, param?: any) => void )
+type AtomGet<Value> = ((get: GetRecoilValue, param?: any) => Value)
 
 type UseStateResult<Value> =  [Value, SetterOrUpdater<Value>]
 
@@ -14,14 +14,14 @@ type UseStateResult<Value> =  [Value, SetterOrUpdater<Value>]
  * @param key 
  * @returns RecoilState
  */
-const makeAtomState = <Value>(
+const makeAtomState = <Value, Parameter extends SerializableParam>(
     atomGet: Value | Function,
     key: string
-    ): RecoilState<Value> => {
-    return atom<Value>({
+    ): ((param: Parameter) => RecoilState<Value>) => {
+    return atomFamily<Value, Parameter>({
         key,
         default: typeof atomGet === 'function'
-            ? (<Function>atomGet)()
+            ? param => (<Function>atomGet)(param)
             : atomGet
     })
 }
@@ -33,24 +33,25 @@ const makeAtomState = <Value>(
  * @param key 
  * @returns 
  */
-const makeSelectState =  <Value>(
+
+function makeSelectState <Value, Parameter extends SerializableParam> (
     atomGet: AtomGet<Value> | Value,
     atomSet: AtomSet<Value>,
     key: string
-): RecoilState<Value> => {
-    return selector<Value>({
+): ((param: Parameter) => RecoilState<Value>) {
+    return selectorFamily<Value, Parameter>(<ReadWriteSelectorFamilyOptions<Value, Parameter>>{
         key,
-        get: ({get}: {get: GetRecoilValue}) => {
+        get: (param: Parameter) => ({get}: {get: GetRecoilValue}) => {
             if (typeof atomGet === 'function') {
-                return (<AtomGet<Value>>atomGet)(get)
+                return (<AtomGet<Value>>atomGet)(get, param)
             } else {
                 return atomGet
             }
         },
-        set: typeof atomSet !== 'function'
+           set: typeof atomSet !== 'function'
             ? <() => {}><unknown>undefined
-            : ({get, set}: {get: GetRecoilValue, set: SetRecoilState}, newValue) => {
-                atomSet(get, set, <Value>newValue)
+            :(param: Parameter) => ({get, set}: {get: GetRecoilValue, set: SetRecoilState}, newValue: Value) => {
+                atomSet(get, set, newValue, param)
             }
     })
 }
@@ -60,19 +61,22 @@ const makeSelectState =  <Value>(
  * @param myState 
  * @returns 
  */
-function makeUseState <Value>(myState: RecoilState<Value>, stateType: string, key: string): () => UseStateResult<Value> {
-    function useState(): 
+function makeUseState <Value, Parameter>(
+    myState: (param: Parameter) => RecoilState<Value>, 
+    stateType: string,
+     key: string): (param: Parameter) => UseStateResult<Value> {
+    function useState(param: Parameter): 
         UseStateResult<Value> {
         const set = useRecoilCallback(({set}) => newValue => {
             
             if (typeof newValue === 'function') { 
-                set<Value>(myState, state => produce(state, draft => newValue(draft)) as unknown as Value)
+                set<Value>(myState(param), state => produce(state, draft => newValue(draft)) as unknown as Value)
             } else {
-                set<Value>(myState, newValue as Value)
+                set<Value>(myState(param), newValue as Value)
             }
           })
           return [
-            useRecoilValue(myState),
+            useRecoilValue(myState(param)),
             stateType === 'read-only' ? (value) => {
                 throw new Error(` Attempt to set read-only RecoilValue: ${key}(set new Value: ${value})`)
             } : set
@@ -89,12 +93,12 @@ function makeUseState <Value>(myState: RecoilState<Value>, stateType: string, ke
  * @returns [useState, recoilState]
  */
 
-function makeState<Value> (
+function makeStates<Value, Parameter  extends SerializableParam> (
     atomGet: AtomGet<Value> | Value, 
     param2?: AtomSet<Value> | string, 
     param3?: string ): [
-        () => UseStateResult<Value>,
-        RecoilState<Value>,
+        (param: Parameter) => UseStateResult<Value>,
+        (param : Parameter) => RecoilState<Value>,
         {
             key: string
         }
@@ -126,15 +130,17 @@ function makeState<Value> (
         }
     } 
 
-    let myState: RecoilState<Value>
+
+    let myState: (param : Parameter) => RecoilState<Value>
+
     if (stateType === 'primary') {
-        myState = makeAtomState<Value>(atomGet, myKey)
+        myState = makeAtomState<Value, Parameter>(atomGet, myKey)
     } else {
-        myState = makeSelectState<Value>(atomGet, atomSet, myKey)
+        myState = makeSelectState<Value, Parameter>(atomGet, atomSet, myKey)
     }
 
     return [
-        makeUseState<Value>(myState, stateType, myKey),
+        makeUseState<Value, Parameter>(myState, stateType, myKey),
         myState,
         {
             key: myKey
@@ -142,4 +148,4 @@ function makeState<Value> (
     ]
 }
 
-export default makeState
+export default makeStates
