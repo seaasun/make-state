@@ -1,6 +1,6 @@
 {
   "name": "make-state",
-  "version": "0.0.1-beta1",
+  "version": "0.0.3",
   "dscript": "React Hooks State",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

@@ -11,9 +11,7 @@ export default {
     },
     external: [ 'recoil', 'immer', 'uuid' ],
     plugins: [
-        terser({
-            moudle: true
-        }),
+        terser(),
         typescript({
             tsconfig: 'tsconfig.build.json',
     }),
