@@ -1,5 +1,5 @@
 {
-  "include": ["src", "types", "examples"],
+  "include": ["src"],
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",

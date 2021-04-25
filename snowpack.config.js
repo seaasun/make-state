@@ -5,6 +5,9 @@ module.exports = {
     examples: { url: '/examples' },
     src: {url: '/'}
   },
+  alias: {
+    'make-state': 'src'
+  },
   plugins: [
     '@snowpack/plugin-react-refresh',
     '@snowpack/plugin-dotenv',

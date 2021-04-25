@@ -1,5 +1,5 @@
 import { GetRecoilValue, RecoilState, SetterOrUpdater,SetRecoilState, SerializableParam,ReadWriteSelectorFamilyOptions,
-    selector, atom, useRecoilCallback, useRecoilValue, atomFamily, selectorFamily } from 'recoil'
+    useRecoilCallback, useRecoilValue, atomFamily, selectorFamily } from 'recoil'
 import {getUid} from './utils'
 import {produce} from 'immer'
 
