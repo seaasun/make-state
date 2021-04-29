@@ -1,5 +1,5 @@
 import { GetRecoilValue, RecoilState, SetterOrUpdater } from 'recoil';
-declare type AtomSet<Value> = undefined | ((get?: GetRecoilValue, set?: any, value?: Value) => void);
+declare type AtomSet<Value> = undefined | ((get: GetRecoilValue, set: any, value: Value) => void);
 declare type AtomGet<Value> = ((get: GetRecoilValue) => Value);
 declare type UseStateResult<Value> = [Value, SetterOrUpdater<Value>];
 /**
