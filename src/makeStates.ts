@@ -51,7 +51,13 @@ function makeSelectState <Value, Parameter extends SerializableParam> (
            set: typeof atomSet !== 'function'
             ? <() => {}><unknown>undefined
             :(param: Parameter) => ({get, set}: {get: GetRecoilValue, set: SetRecoilState}, newValue: Value) => {
-                atomSet(get, set, newValue, param)
+                const mySet = (state: RecoilState<Value>, cb: any) => {
+                    set(state, typeof cb === 'function'
+                        ? state => produce(state, (draft: unknown) => cb(draft)) as unknown as Value
+                        : cb
+                    )
+                }
+                atomSet(get, mySet, newValue, param)
             }
     })
 }

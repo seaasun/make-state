@@ -10,7 +10,7 @@ Recoil作为新一代状态管理非常好用，然而上手有点复杂，API�
 + 简单的API，您无需学习Recoil，5分钟上手
 + 可以和Recoil共用，支持Recoil几乎所有特性, 满足深度使用场景。
 
-**最小示例([CodeSandbox](https://codesandbox.io/s/confident-monad-x3x4d?file=/src/index.js))：**
+**最小示例([CodeSandbox](https://codesandbox.io/s/count-jnsft))：**
 ```jsx
 import ReactDom from 'react-dom'
 import makeState, {RecoilRoot} from 'make-state'
@@ -39,7 +39,7 @@ ReactDom.render(
 ```
 
 ## 快速起步
-用一个示例（[CodeSandBox](https://codesandbox.io/s/make-state-text-7hz9m?file=/src/index.js)）：一个显示字数，并有删除键的文本框介绍make-state。
+用一个示例（[CodeSandBox](https://codesandbox.io/s/get-start-7hz9m)）：一个显示字数，并有删除键的文本框介绍make-state。
 
 ### 1. 安装
 ```
@@ -49,7 +49,7 @@ npm i make-state --save
 yarn add make-state
 ```
 
-### 2. 使用<RecoilRoot>包裹React组件
+### 2. 使用RecoilRoot包裹React组件
 被`<RecoilRoot>`包裹的组件，才可以使用`make-state`， 推荐将`<RecoilRoot>`放置在根组件：
 
 ```jsx
@@ -57,7 +57,7 @@ import {RecoilRoot} from 'make-state'
 
 ReactDOM.render(
   <ReocilRoot >
-	  {/* 其他内容 */}
+	{/* 其他内容 */}
   </ReocilRoot >
   document.getElementById('root')
 )
@@ -78,7 +78,7 @@ const [useName] = makeState('Tom')
 const [useNames] = makeState(['Tom', 'Jerry'])
 const [useUser] = makeState({name: 'Tom'})
 ```
-(如果你了解Recoil，会发现makeState生成的状态同atom的返回值一样，也是一个RecoilState)
+(如果你了解Recoil，会发现makeState生成的状态同atom的返回值一样，是一个RecoilState)
 
 
 ### 4. 在组件中使用
@@ -112,6 +112,7 @@ const TextLen = () => {
   return <p>Length: {len} </p>
 }
 ```
+(如果你了解Recoil，会发现此时生成的状态同selector（read only）的返回值一样，是一个RecoilState)
 
 ### 6. 创建可写驱动状态(writeable drrived stated)
 在`makeState`中第二个参数中传入函数，将生成一个可写驱动状态。函数中的参数 `get`获取其他状态值， `set`修改状态值，`newValue`是新传入的值。
@@ -138,6 +139,7 @@ const SliceBtn = () => {
   )
 }
 ```
+(如果你了解Recoil，会发现此时生成的状态同selector（write）的返回值一样，是一个RecoilState)
 
 
 ## Recipes
@@ -158,7 +160,10 @@ function User () {
         }}>
     </div>
 }
+```
 
+可写驱动状态中的`set`同样支持可变语法
+```jsx 
 const [useUserName] = makeState(
     get => get(userState).name,
     (get, set, newValue) => {

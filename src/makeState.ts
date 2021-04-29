@@ -3,6 +3,8 @@ import { GetRecoilValue, RecoilState, SetterOrUpdater,SetRecoilState,
 import {getUid} from './utils'
 import {produce} from 'immer'
 
+type Set<Value> = (state: RecoilState<Value>, cb: Cb<Value>) => void
+
 type AtomSet<Value> = undefined | ((get?: GetRecoilValue, set?: any, value?: Value) => void )
 type AtomGet<Value> = ((get: GetRecoilValue) => Value)
 
@@ -25,6 +27,8 @@ const makeAtomState = <Value>(
             : atomGet
     })
 }
+
+type Cb<Value> = (draft: Value) => void | Value
 
 /**
  * 创建selector
@@ -50,7 +54,13 @@ const makeSelectState =  <Value>(
         set: typeof atomSet !== 'function'
             ? <() => {}><unknown>undefined
             : ({get, set}: {get: GetRecoilValue, set: SetRecoilState}, newValue) => {
-                atomSet(get, set, <Value>newValue)
+                const mySet = (state: RecoilState<Value>, cb: Cb<Value>): void => {
+                    set(state, typeof cb === 'function'
+                        ? state => produce(state, (draft: Value) => cb(draft)) as unknown as Value
+                        : cb
+                    )
+                }
+                atomSet(get, mySet, <Value>newValue)
             }
     })
 }
