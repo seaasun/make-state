@@ -5,7 +5,7 @@ import {produce} from 'immer'
 
 type Set<Value> = (state: RecoilState<Value>, cb: Cb<Value>) => void
 
-type AtomSet<Value> = undefined | ((get?: GetRecoilValue, set?: any, value?: Value) => void )
+type AtomSet<Value> = undefined | ((get: GetRecoilValue, set: any, value: Value) => void )
 type AtomGet<Value> = ((get: GetRecoilValue) => Value)
 
 type UseStateResult<Value> =  [Value, SetterOrUpdater<Value>]
@@ -153,3 +153,13 @@ function makeState<Value> (
 }
 
 export default makeState
+
+
+
+const cb = (): void => {}
+
+const run = (cb: (a:string) => void) => {
+    cb('b')
+}
+
+run (cb)

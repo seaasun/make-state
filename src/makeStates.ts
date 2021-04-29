@@ -3,7 +3,7 @@ import { GetRecoilValue, RecoilState, SetterOrUpdater,SetRecoilState, Serializab
 import {getUid} from './utils'
 import {produce} from 'immer'
 
-type AtomSet<Value> = undefined | ((get?: GetRecoilValue, set?: any, value?: Value, param?: any) => void )
+type AtomSet<Value> = undefined | ((get: GetRecoilValue, set: any, value: Value, param?: any) => void )
 type AtomGet<Value> = ((get: GetRecoilValue, param?: any) => Value)
 
 type UseStateResult<Value> =  [Value, SetterOrUpdater<Value>]
