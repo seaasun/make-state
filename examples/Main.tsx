@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 
 const StateNumber = lazy(() => import('./StateNumber'))
+const Lab = lazy(() => import('./lab'))
 // const StateUndefind = lazy(() => import('./StateUndefind'))
 // const StateObject = lazy(() => import('./StateObject'))
 // const StateFunction = lazy(() => import('./StateFunction'))
@@ -14,10 +15,10 @@ const StateNumber = lazy(() => import('./StateNumber'))
 // const StateFunctionFunction = lazy(() => import('./StateFunctionFunction'))
 
 // const StatesNumber = lazy(() => import('./StatesNumber'))
-// const StatesObject = lazy(() => import('./StatesObject'))
+const StatesObject = lazy(() => import('./StatesObject'))
 // const StatesUndefind = lazy(() => import('./StatesUndefind'))
 // const StatesFunction = lazy(() => import('./StatesFunction'))
-// const StatesFunctionFunction = lazy(() => import('./StatesFunctionFunction'))
+const StatesFunctionFunction = lazy(() => import('./StatesFunctionFunction'))
 
 const Fallback = () => <div></div>
 
@@ -25,9 +26,11 @@ function Main () {
     return <Router>
       <Suspense fallback = {<Fallback />}>
         <Switch>
+        <Route path = "/lab"><Lab /></Route>
             {/* <Route path = "/simple"><Simple /></Route>
             <Route path = "/lab"><Lab /></Route> */}
             <Route path = "/StateNumber"><StateNumber /></Route>
+            <Route path = "/StatesObject"><StatesObject /></Route>
             {/* <Route path = "/StateUndefind"><StateUndefind /></Route>
             <Route path = "/StateObject"><StateObject /></Route>
             <Route path = "/StateLazy"><StateLazy /></Route>
@@ -39,6 +42,7 @@ function Main () {
             <Route path = "/StatesUndefind"><StatesUndefind /></Route>
             <Route path = "/StatesFunction"><StatesFunction /></Route>
             <Route path = "/StatesFunctionFunction"><StatesFunctionFunction /></Route> */}
+            <Route path = "/StatesFunctionFunction"><StatesFunctionFunction /></Route>
         </Switch>
        </Suspense>
     </Router>

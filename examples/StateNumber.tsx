@@ -1,6 +1,5 @@
 import React from 'react'
-import {makeState} from '../src'
-
+import {makeState, current } from '../src'
 const [useCount, count, {key}] = makeState(5, 'count')
 
 console.log(333, key)

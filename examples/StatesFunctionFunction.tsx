@@ -1,11 +1,11 @@
 import React from 'react'
-import {makeStates} from '../src'
+import makeState, {makeStates} from '../src'
 
 const [useCount,count] = makeStates(1, 'count')
 
 const [useDouble] = makeStates(
-    (get,props) => get(count(props)) + props,
-    (get, set, newValue, props) => set(count(props), newValue)
+    props => (get) => props + get(count(props)),
+    props => (get, set, newValue, ) => set(count(props), newValue)
 )
 
 

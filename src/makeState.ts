@@ -116,25 +116,23 @@ function makeState<Value> (
     let onlyRead = false
     let stateType: 'primary' | 'read-only' | 'read-write'
 
-    if (param3) {
-        if (typeof param2 === 'function') {
-            stateType = 'read-write'
-            atomSet = param2
-        } else {
-            stateType = 'read-only'
-        }
-        myKey = param3
-    } else if (typeof param2 === 'function') {
+    if (typeof param2 === 'function') {
         stateType = 'read-write'
         atomSet = param2
-    } else if (typeof atomGet === 'function') {
+        if (typeof param3 === 'string') {
+            myKey = param3
+        }
+    } else if (param2 === null || param2 === '') {
         stateType = 'read-only'
+        if (typeof param3 === 'string') {
+            myKey = param3
+        }
     } else {
         stateType = 'primary'
-        if (param2 === 'string') {
+        if (typeof param2 === 'string') {
             myKey = param2
         }
-    } 
+    }
 
     let myState: RecoilState<Value>
     if (stateType === 'primary') {

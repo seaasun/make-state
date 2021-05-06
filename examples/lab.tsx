@@ -1,17 +1,23 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {atom, selector, useRecoilState, useRecoilValue} from 'recoil'
 import { makeState } from '../src'
 
+// const b = selector({
+//     key: 'b',
+//     get: 'b'
+// })
 
-// const a2 = selector({
-//     key: 'a2',
-//     get: () => {
-//         return 1
-//     }
+// const a = atom({
+//     default: b,
+//     key: 'a'
 // })
 
 function Lab () {
-    // const text = useRecoilValue(a2)
+    // const text= useRecoilValue(b)
+    // // useEffect(()=> {
+    // //     setText(4)
+    // // })
+    // console.log(text)
     return <div>
         {/* {text} */}
     </div>

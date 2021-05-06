@@ -5,9 +5,9 @@ type User = {
     name: string
   }
 
-const [useCount, count, {key}] = makeStates<User, string>({
-    name: 'Tom'
-}, 'count')
+const [useCount, count, {key}] = makeStates<User, string>(name => ({
+    name
+}), 'count')
 
 function Demo () {
     const [data1, setData1] = useCount('a')

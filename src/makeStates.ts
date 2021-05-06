@@ -43,7 +43,8 @@ function makeSelectState <Value, Parameter extends SerializableParam> (
         key,
         get: (param: Parameter) => ({get}: {get: GetRecoilValue}) => {
             if (typeof atomGet === 'function') {
-                return (<AtomGet<Value>>atomGet)(get, param)
+                // console.log(4444, param)
+                return ((<AtomGet<Value>>atomGet)(param))(get)
             } else {
                 return atomGet
             }
@@ -57,7 +58,7 @@ function makeSelectState <Value, Parameter extends SerializableParam> (
                         : cb
                     )
                 }
-                atomSet(get, mySet, newValue, param)
+                atomSet(param)(get, mySet, newValue)
             }
     })
 }
@@ -113,28 +114,25 @@ function makeStates<Value, Parameter  extends SerializableParam> (
 
     let atomSet: AtomSet<Value>
     let myKey: string = 'make-state-' + getUid()
-    let onlyRead = false
     let stateType: 'primary' | 'read-only' | 'read-write'
 
-    if (param3) {
-        if (typeof param2 === 'function') {
-            stateType = 'read-write'
-            atomSet = param2
-        } else {
-            stateType = 'read-only'
-        }
-        myKey = param3
-    } else if (typeof param2 === 'function') {
+    if (typeof param2 === 'function') {
         stateType = 'read-write'
         atomSet = param2
-    } else if (typeof atomGet === 'function') {
+        if (typeof param3 === 'string') {
+            myKey = param3
+        }
+    } else if (param2 === null || param2 === '') {
         stateType = 'read-only'
+        if (typeof param3 === 'string') {
+            myKey = param3
+        }
     } else {
         stateType = 'primary'
-        if (param2 === 'string') {
+        if (typeof param2 === 'string') {
             myKey = param2
         }
-    } 
+    }
 
 
     let myState: (param : Parameter) => RecoilState<Value>
